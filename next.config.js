@@ -6,7 +6,21 @@ const withNextra = require("nextra")({
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // any configs you need
+  reactStrictMode: true,
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: "images.unsplash.com",
+        port: '',
+      },
+      {
+        protocol: 'https',
+        hostname: "blogs.nvidia.com",
+        port: '',
+      }
+    ]
+  }
 };
 
 module.exports = withNextra(nextConfig);

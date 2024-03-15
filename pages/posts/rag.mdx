@@ -1,0 +1,95 @@
+---
+title: Kỹ thuật Retrival-Augmented Generation
+date: 2024/3/15
+description: Phân tích và giải thích kỹ thuật Retrival-Augmented Generation để tăng cường kiến thức cho khả năng sinh văn bản của mô hình ngôn ngữ tự nhiên.
+tag: natural processing language, retrieval-augmented generation
+author: Thinh Pham
+---
+import Image from "next/image";
+
+# Retrival Augmented Generation
+
+## Các hạn chế của Large Language Model
+
+- **Hạn chế về kiến thức**: Mô hình ngôn ngữ tự nhiên (NLP) hiện đại như GPT-3, BERT, Transformer, ... có khả năng sinh văn bản tốt, nhưng chúng không có khả năng tìm kiếm thông tin từ nguồn dữ liệu bên ngoài.
+- **Hallucination**: Mô hình sinh văn bản có thể tạo ra thông tin không chính xác hoặc không có thật từ dữ liệu đầu vào.
+- **Black-box**: Mô hình sinh văn bản không thể giải thích được cách mà nó sinh ra kết quả.
+
+## Các phương pháp khắc phục hạn chế trên
+
+- **Prompt Engineering**: Tạo ra các câu hỏi hoặc đoạn văn bản mô tả vấn đề cần giải quyết, sau đó đưa vào mô hình sinh văn bản để sinh ra kết quả.
+- **Instruction-based Generation**: Mô hình sinh văn bản được huấn luyện dựa trên các hướng dẫn cụ thể, giúp mô hình sinh văn bản sinh ra kết quả chính xác hơn.
+- **Retrival-Augmented Generation**: Kết hợp giữa mô hình sinh văn bản và mô hình tìm kiếm thông tin để tăng cường kiến thức cho mô hình sinh văn bản.
+
+## Retrival-Augmented Generation là gì?
+
+Retrival-Augmented Generation (RAG) là một phương pháp kết hợp giữa mô hình sinh văn bản và mô hình tìm kiếm thông tin. Mô hình tìm kiếm thông tin sẽ tìm kiếm thông tin từ nguồn dữ liệu bên ngoài, sau đó đưa vào mô hình sinh văn bản để tăng cường kiến thức cho mô hình sinh văn bản.
+
+## Cách thức hoạt động của Retrival-Augmented Generation
+
+1. **Tìm kiếm thông tin**: Mô hình tìm kiếm thông tin sẽ tìm kiếm thông tin từ nguồn dữ liệu bên ngoài, sau đó trả về kết quả tìm kiếm.
+2. **Sinh văn bản**: Mô hình sinh văn bản sẽ sinh văn bản dựa trên thông tin từ mô hình tìm kiếm thông tin.
+3. **Kết hợp kết quả**: Kết quả từ mô hình tìm kiếm thông tin và mô hình sinh văn bản sẽ được kết hợp lại để tạo ra kết quả cuối cùng.
+4. **Giải thích kết quả**: Kết quả cuối cùng sẽ được giải thích để người dùng hiểu được cách mà kết quả được sinh ra.
+5. **Lặp lại quá trình**: Quá trình tìm kiếm thông tin, sinh văn bản, kết hợp kết quả và giải thích kết quả sẽ được lặp lại nhiều lần để tạo ra kết quả chính xác nhất.
+
+<Image
+  src="https://blogs.nvidia.com/wp-content/uploads/2023/11/NVIDIA-RAG-diagram-scaled.jpg"
+  alt="Photo"
+  width={1125}
+  height={750}
+  priority
+  className="rag"
+/>
+
+
+## Các loại RAG
+
+- **Naive RAG**: Mô hình tuân theo quy trình indexing, retrieval và generation.
+- **Advanced RAG**: Giải quyết các vấn đề có trong Naive RAG như cải thiện chất lượng truy xuất có thể liên quan đến việc tối ưu hóa các quy trình trước truy xuất, truy xuất và sau truy xuất.
+- **Modular RAG**: tăng cường các functional modules như kết hợp modules tìm kiếm để truy xuất điểm tương đồng và áp dụng fine-tuning trong bộ truy xuất. Cả Naive RAG và Advanced RAG đều là những trường hợp đặc biệt của Modular RAG và được tạo thành từ các module cố định.
+
+## Quá trình Retrieval
+
+### Tăng cường khả năng biểu diễn ngữ nghĩa
+
+- Chunking (Cắt từng khúc): Một bước quan trọng là chọn chiến lược chunking phù hợp, tùy thuộc vào nội dung bạn đang xử lý và ứng dụng mà bạn đang tạo phản hồi.
+- Fine-tuned Embedding Models: Cần phải tinh chỉnh Embedding Model nếu đang xử lý trên một vài tác vụ chuyên biệt.
+
+### Căn chỉnh truy vấn và tài liệu
+
+- Query Rewriting: Tập trung vào việc viết lại các truy vấn bằng nhiều kỹ thuật khác nhau như Query2Doc, ITER-RETGEN và HyDE.
+- Embedding Transformation: Tối ưu hóa cách biểu diễn các query embedding và căn chỉnh vào một không gian liên kết chặt chẽ hơn vào một tác vụ.
+
+### Căn chỉnh Retriever và LLM
+
+- Fine-tuning Retrievers: Sử dụng feedback của LLM để tinh chỉnh các mô hình truy xuất. Bao gồm các tool augmentation adapted retriever (AAR), REPLUG và UPRISE.
+- Adapters: Kết hợp các bộ adapter bên ngoài để hỗ trợ quá trình căn chỉnh. Bao gồm các tool PRCA, RECOMP và PKG.
+
+## Quá trình Generation
+
+- Post-retrieval with Frozen LLM: Quá trình xử lý sau truy xuất không ảnh hưởng đến LLM và thay vào đó tập trung vào việc nâng cao chất lượng của kết quả truy xuất thông qua các hoạt động như nén thông tin và sắp xếp lại kết quả. Nén thông tin giúp giảm nhiễu, giải quyết các hạn chế về độ dài ngữ cảnh của LLM và tăng cường hiệu ứng generation. Việc sắp xếp lại nhằm mục đích sắp xếp lại các tài liệu để ưu tiên các mục phù hợp nhất ở trên cùng.
+- Fine-tuning LLM for RAG: Để cải thiện hệ thống RAG, generator có thể được tối ưu hóa hoặc tinh chỉnh hơn nữa để đảm bảo rằng văn bản được tạo là tự nhiên và tận dụng hiệu quả các tài liệu được truy xuất.
+
+## Quá trình Augmentation
+
+- Augmentation Stages: RETRO là một về hệ thống tận dụng khả năng tăng cường truy xuất để huấn luyện trước các hệ thống có quy mô lớn ngay từ đầu. Nó sử dụng một bộ encoder bổ sung được xây dựng dựa trên kiến ​​thức bên ngoài. Tinh chỉnh cũng có thể được kết hợp với RAG để giúp phát triển và nâng cao hiệu quả của hệ thống RAG. Ở giai đoạn suy luận, nhiều kỹ thuật được áp dụng để kết hợp hiệu quả nội dung được truy xuất nhằm đáp ứng nhu cầu nhiệm vụ cụ thể và cải tiến hơn nữa quy trình RAG.
+- Augmentation Source: Độ hiệu quả của mô hình RAG bị ảnh hưởng rất lớn từ việc lựa chọn nguồn dữ liệu tăng cường. Dữ liệu có thể được phân loại thành dữ liệu phi cấu trúc, có cấu trúc và do LLM tạo.
+- Augmentation Process: Đối với nhiều tác vụ như multi-step reasoning, một lần truy xuất là không đủ nên có một số phương pháp sau:
+  - Iterative retrieval: Cho phép mô hình thực hiện nhiều chu kỳ truy xuất để nâng cao độ sâu và mức độ liên quan của thông tin. Một vài phương pháp có thể kể đến như RETRO và GAR-meet-RAG.
+  - Recursive retrieval: Lặp lại đệ quy trên đầu ra của một bước truy xuất và làm đầu vào cho một bước truy xuất khác. Điều này cho phép tìm hiểu sâu hơn về thông tin liên quan cho các truy vấn phức tạp và nhiều bước (ví dụ: nghiên cứu học thuật và phân tích các tình huống pháp luật). Một vài phương pháp có thể kể đến như IRCoT và Tree of Clarifications.
+  - Adaptive retrieval: Điều chỉnh quá trình truy xuất theo nhu cầu cụ thể bằng cách xác định các thời điểm và nội dung tối ưu để truy xuất. Một vài phương pháp có thể kể đến như FLARE và Self-RAG.
+
+## So sánh RAG và Fine-tuning
+
+Các nghiên cứu trong hai lĩnh vực này cho thấy rằng RAG phù hợp cho việc tích hợp kiến ​​thức mới trong khi việc Fine-tuning có thể được sử dụng để cải thiện hiệu suất và hiệu quả của mô hình thông qua việc cải thiện kiến ​​thức nội bộ, định dạng đầu ra và đưa ra các instructions phức tạp sau này.
+
+## Kết luận
+
+Các hệ thống RAG đã phát triển rất nhanh, bao gồm cả việc phát triển các mô hình tiên tiến hơn cho phép tùy chỉnh và nâng cao hiệu suất cũng như tính ứng dụng của RAG trên nhiều lĩnh vực. Hiện tại có một lượng nhu cầu rất lớn về các ứng dụng RAG, điều này đã thúc đẩy sự phát triển các phương pháp để cải thiện các thành phần khác nhau của hệ thống RAG. Từ các phương pháp kết hợp đến khả năng tự truy xuất, đây là một số lĩnh vực nghiên cứu hiện đang được khám phá của các mô hình RAG hiện đại. Nhu cầu về phát triển các công cụ và thang đo đánh giá tốt hơn cũng ngày càng tăng.
+
+## Tài liệu tham khảo
+
+- [Retrieval Augmented Generation (RAG) for LLMs](https://www.promptingguide.ai/research/rag)
+- [What Is Retrieval-Augmented Generation, aka RAG?](https://blogs.nvidia.com/blog/what-is-retrieval-augmented-generation/)
+- [Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks](https://arxiv.org/pdf/2005.11401.pdf)
