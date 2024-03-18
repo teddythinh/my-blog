@@ -1,4 +1,4 @@
-import { Html, Head, Main, NextScript } from "next/document"; // eslint-disable-line no-unused-vars
+import { Html, Head, Main, NextScript } from "next/document";
 
 export default function Document() {
     const meta = {

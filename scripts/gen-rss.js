@@ -3,12 +3,6 @@ const path = require("path");
 const RSS = require("rss");
 const matter = require("gray-matter");
 
-import { fileURLToPath } from "url";
-import { dirname } from "path";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
 async function generate() {
     const feed = new RSS({
         title: "Thinh Pham",
@@ -37,8 +31,8 @@ async function generate() {
                 categories: frontmatter.data.tag.split(", "),
                 author: frontmatter.data.author,
             });
-        }),
-    );
+        })
+    )
 
     await fs.writeFile("./public/feed.xml", feed.xml({ indent: true }));
 }

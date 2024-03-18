@@ -3,9 +3,7 @@
     "scripts": {
         "dev": "next",
         "build": "node ./scripts/gen-rss.js && next build",
-        "start": "next start",
-        "lint": "eslint .",
-        "format": "prettier --write ."
+        "start": "next start"
     },
     "dependencies": {
         "@vercel/speed-insights": "^1.0.10",
@@ -18,28 +16,9 @@
         "rss": "^1.2.2"
     },
     "devDependencies": {
-        "@babel/eslint-parser": "^7.23.10",
-        "@babel/preset-react": "^7.23.3",
         "@types/node": "^18.0.0",
         "@types/react": "^18.0.14",
         "@types/react-dom": "^18.0.5",
-        "eslint": "^8.57.0",
-        "eslint-config-prettier": "^9.1.0",
-        "eslint-plugin-prettier": "^5.1.3",
-        "eslint-plugin-react": "^7.34.1",
-        "husky": "^9.0.11",
-        "lint-staged": "^15.2.2",
-        "prettier": "3.2.5",
         "typescript": "^4.7.4"
-    },
-    "lint-staged": {
-        "*.{js,jsx,ts,tsx}": [
-            "prettier --write --ignore-unknown",
-            "eslint ."
-        ],
-        "*.": [
-            "prettier --write --ignore-unknown"
-        ]
-    },
-    "type": "module"
+    }
 }
