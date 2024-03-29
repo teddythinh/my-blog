@@ -4,19 +4,8 @@
         <description><![CDATA[Thinh Pham]]></description>
         <link>https://thinh-blog.vercel.app/</link>
         <generator>RSS for Node</generator>
-        <lastBuildDate>Fri, 29 Mar 2024 07:51:41 GMT</lastBuildDate>
+        <lastBuildDate>Fri, 29 Mar 2024 08:03:29 GMT</lastBuildDate>
         <atom:link href="https://thinh-blog.vercel.app/feed.xml" rel="self" type="application/rss+xml"/>
-        <item>
-            <title><![CDATA[Kỹ thuật Retrival-Augmented Generation]]></title>
-            <description><![CDATA[Phân tích và giải thích kỹ thuật Retrival-Augmented Generation để tăng cường kiến thức cho khả năng sinh văn bản của mô hình ngôn ngữ tự nhiên.]]></description>
-            <link>/posts/rag</link>
-            <guid isPermaLink="true">/posts/rag</guid>
-            <category><![CDATA[natural processing language]]></category>
-            <category><![CDATA[retrieval-augmented generation]]></category>
-            <category><![CDATA[large language model]]></category>
-            <dc:creator><![CDATA[Thinh Pham]]></dc:creator>
-            <pubDate>Thu, 14 Mar 2024 16:00:00 GMT</pubDate>
-        </item>
         <item>
             <title><![CDATA[Gemini Pro Benchmarking Pipeline]]></title>
             <description><![CDATA[The pipeline for benchmarking Gemini Pro]]></description>
@@ -28,6 +17,17 @@
             <category><![CDATA[pipeline]]></category>
             <dc:creator><![CDATA[Thinh Pham]]></dc:creator>
             <pubDate>Tue, 26 Mar 2024 16:00:00 GMT</pubDate>
+        </item>
+        <item>
+            <title><![CDATA[Kỹ thuật Retrival-Augmented Generation]]></title>
+            <description><![CDATA[Phân tích và giải thích kỹ thuật Retrival-Augmented Generation để tăng cường kiến thức cho khả năng sinh văn bản của mô hình ngôn ngữ tự nhiên.]]></description>
+            <link>/posts/rag</link>
+            <guid isPermaLink="true">/posts/rag</guid>
+            <category><![CDATA[natural processing language]]></category>
+            <category><![CDATA[retrieval-augmented generation]]></category>
+            <category><![CDATA[large language model]]></category>
+            <dc:creator><![CDATA[Thinh Pham]]></dc:creator>
+            <pubDate>Thu, 14 Mar 2024 16:00:00 GMT</pubDate>
         </item>
     </channel>
 </rss>
