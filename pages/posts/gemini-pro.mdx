@@ -1,0 +1,392 @@
+---
+title: Gemini Pro Benchmarking Pipeline
+date: 2024/3/27
+description: The pipeline for benchmarking Gemini Pro
+tag: natural processing language, large language model, benchmarking, pipeline
+author: Thinh Pham
+---
+
+import Image from "next/image";
+
+# Quy trình đánh giá hiệu năng của mô hình Gemini Pro với thang đo VMLU
+
+## Cài đặt môi trường
+
+Môi trường sử dụng:
+
+- Google Colab
+
+## Cài đặt thư viện
+
+```bash
+!pip install -q -U google-generativeai
+```
+
+## Tải các thư viện cần thiết
+
+```python
+import pathlib
+import textwrap
+from pprint import pprint
+import pandas as pd
+import json
+import re
+
+import google.generativeai as genai
+
+# Used to securely store your API key
+from google.colab import userdata
+
+from IPython.display import display
+from IPython.display import Markdown
+```
+
+## Cài đặt hàm hỗ trợ
+
+```python
+def to_markdown(text):
+  text = text.replace('•', '  *')
+  return Markdown(textwrap.indent(text, '> ', predicate=lambda _: True))
+```
+
+## Kết nối với Google Drive
+
+```python
+from google.colab import drive
+drive.mount('/content/drive')
+```
+
+> Tập dữ liệu được sử dụng trong bài viết này được lưu trữ tại thư mục `/content/drive/MyDrive/vmlu_v2`.
+
+## Tạo API key
+
+1. Để lấy API key, bạn cần truy cập vào trang [Google AI Studio API key](https://aistudio.google.com/app/apikey)
+2. Nhấp vào nút `Create API key` để tạo một API key mới
+    <Image
+    src="/images/google_ai_api_key.png"
+    alt="Photo"
+    width={1125}
+    height={750}
+    priority
+    className="google-api-key"
+    />
+3. Chọn Project mà bạn muốn sử dụng API key và nhấp vào nút `Create API key in existing project`
+    <Image
+    src="/images/google_ai_api_key_2.png"
+    alt="Photo"
+    width={500}
+    height={300}
+    priority
+    className="google-api-key-2"
+    />
+
+## Cài đặt API key
+
+1. Copy API key đã tạo và thêm vào biến `GOOGLE_API_KEY` trong phần Secrets của Google Colab.
+    <Image
+    src="/images/secrets.png"
+    alt="Photo"
+    width={500}
+    height={300}
+    priority
+    className="secrets"
+    />
+
+2. Truy cập vào API key thông qua code sau:
+    ```python
+    GOOGLE_API_KEY=userdata.get('GOOGLE_API_KEY')
+
+    genai.configure(api_key=GOOGLE_API_KEY)
+    ```
+
+## Liệt kê các mô hình
+
+```python
+for m in genai.list_models():
+  if 'generateContent' in m.supported_generation_methods:
+    pprint(m.name)
+```
+
+Kết quả trả về:
+
+```
+'models/gemini-1.0-pro'
+'models/gemini-1.0-pro-001'
+'models/gemini-1.0-pro-latest'
+'models/gemini-1.0-pro-vision-latest'
+'models/gemini-pro'
+'models/gemini-pro-vision'
+```
+
+## Thông số của mô hình
+
+```python
+model = genai.get_model("models/gemini-pro")
+pprint(model)
+```
+
+Kết quả trả về:
+
+```
+Model(name='models/gemini-pro',
+      base_model_id='',
+      version='001',
+      display_name='Gemini 1.0 Pro',
+      description='The best model for scaling across a wide range of tasks',
+      input_token_limit=30720,
+      output_token_limit=2048,
+      supported_generation_methods=['generateContent', 'countTokens'],
+      temperature=0.9,
+      top_p=1.0,
+      top_k=1)
+```
+
+## Cấu hình mô hình
+
+```python
+generation_config = {
+  "candidate_count": 1,
+  "max_output_tokens": 256,
+  "temperature": 1.0,
+  "top_p": 0.7,
+}
+
+safety_settings=[
+  {
+    "category": "HARM_CATEGORY_DANGEROUS",
+    "threshold": "BLOCK_NONE",
+  },
+  {
+    "category": "HARM_CATEGORY_HARASSMENT",
+    "threshold": "BLOCK_NONE",
+  },
+  {
+    "category": "HARM_CATEGORY_HATE_SPEECH",
+    "threshold": "BLOCK_NONE",
+  },
+  {
+    "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+    "threshold": "BLOCK_NONE",
+  },
+  {
+    "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
+    "threshold": "BLOCK_NONE",
+  },
+]
+
+model = genai.GenerativeModel(
+    model_name="gemini-pro",
+    generation_config=generation_config,
+    safety_settings=safety_settings
+)
+
+pprint(model)
+```
+
+Kết quả trả về:
+
+```
+genai.GenerativeModel(
+    model_name='models/gemini-pro',
+    generation_config={'candidate_count': 1, 'max_output_tokens': 256, 'temperature': 1.0, 'top_p': 0.7},
+    safety_settings={<HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: 10>: <HarmBlockThreshold.BLOCK_NONE: 4>, <HarmCategory.HARM_CATEGORY_HARASSMENT: 7>: <HarmBlockThreshold.BLOCK_NONE: 4>, <HarmCategory.HARM_CATEGORY_HATE_SPEECH: 8>: <HarmBlockThreshold.BLOCK_NONE: 4>, <HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT: 9>: <HarmBlockThreshold.BLOCK_NONE: 4>},
+    tools=None,
+)
+```
+
+## Thử nghiệm mô hình
+
+```python
+prompt = """
+Chỉ đưa ra chữ cái đứng trước câu trả lời đúng (A, B, C, D hoặc E) của câu hỏi trắc nghiệm sau:
+Một nền kinh tế trong trạng thái toàn dụng nhân công có nghĩa là:
+A. Không còn lạm phát nhưng có thể còn thất nghiệp
+B. Không còn thất nghiệp nhưng có thể còn lạm phát
+C. Không còn thất nghiệp và không còn lạm phát
+D. Vẫn còn một tỷ lệ lạm phát và tỷ lệ thất nghiệp nhất định
+Đáp án:
+"""
+
+response = model.generate_content(prompt)
+to_markdown(response.text)
+```
+
+Kết quả trả về:
+
+```
+C
+```
+
+## Thử nghiệm mô hình với tập dữ liệu
+
+```python
+# Đọc dữ liệu từ tập test và đưa vào list data
+data = []
+with open('/content/drive/MyDrive/vmlu_v2/test.jsonl', 'r') as f:
+  lines = f.readlines()
+  for line in lines[:1]:
+    data.append(json.loads(line))
+
+  # Thử nghiệm với tập dữ liệu
+  all_res = []
+  for i, doc in enumerate(tqdm.tqdm(data[:])):
+    # Tạo lựa chọn
+    text_choice = '\n'.join(doc['choices'])
+    # Tạo câu prompt bao gồm: câu hỏi + lựa chọn + đáp án
+    prompt = "Chỉ đưa ra chữ cái đứng trước câu trả lời đúng (A, B, C, D hoặc E) của câu hỏi trắc nghiệm sau: \n" \
+              + doc["question"] \
+              + "\n\n" \
+              + text_choice \
+              + "\n" \
+              + "Đáp án: "
+    
+    # Format của chat message
+    messages = [
+      {
+          'role':'user',
+          'parts': [prompt]
+      }
+    ]
+
+    print()
+    pprint(messages)
+
+    # Tạo response từ mô hình
+    response = model.generate_content(messages)
+
+    print()
+    pprint(response.text)
+```
+
+Kết quả trả về:
+
+```
+  0%|          | 0/1 [00:00<?, ?it/s]
+[{'parts': ['Chỉ đưa ra chữ cái đứng trước câu trả lời đúng (A, B, C, D hoặc '
+            'E) của câu hỏi trắc nghiệm sau: \n'
+            'Một nền kinh tế trong trạng thái toàn dụng nhân công có nghĩa '
+            'là:\n'
+            '\n'
+            'A. Không còn lạm phát nhưng có thể còn thất nghiệp\n'
+            'B. Không còn thất nghiệp nhưng có thể còn lạm phát\n'
+            'C. Không còn thất nghiệp và không còn lạm phát\n'
+            'D. Vẫn còn một tỷ lệ lạm phát và tỷ lệ thất nghiệp nhất định\n'
+            'Đáp án: '],
+  'role': 'user'}]
+100%|██████████| 1/1 [00:01<00:00,  1.85s/it]
+'C'
+```
+
+## Đánh giá mô hình với toàn bộ tập dữ liệu
+
+```python
+# Đọc dữ liệu từ tập test và đưa vào list data
+data = []
+with open('/content/drive/MyDrive/vmlu_v2/test.jsonl', 'r', encoding='utf-8') as f:
+  lines = f.readlines()
+  for line in lines:
+    data.append(json.loads(line))
+
+# Thử nghiệm với tập dữ liệu
+  all_res = []
+  for i, doc in enumerate(tqdm.tqdm(data[:])):
+    # Tạo lựa chọn
+    text_choice = '\n'.join(doc['choices'])
+    # Tạo câu prompt bao gồm: câu hỏi + lựa chọn + đáp án
+    prompt = "Chỉ đưa ra chữ cái đứng trước câu trả lời đúng (A, B, C, D hoặc E) của câu hỏi trắc nghiệm sau: \n" \
+              + doc["question"] \
+              + "\n\n" \
+              + text_choice \
+              + "\n" \
+              + "Đáp án: "
+    
+    # Format của chat message
+    messages = [
+      {
+          'role':'user',
+          'parts': [prompt]
+      }
+    ]
+
+    # Tạo response từ mô hình, nếu không có response thì sẽ thử lại sau 30 giây
+    response=None
+    timeout_counter=0
+    while response is None and timeout_counter<=30:
+      try:
+        response = model.generate_content(messages)
+      except Exception as msg:
+        pprint(msg)
+        print('sleeping because of exception ...')
+        time.sleep(30)
+        continue
+
+    # Nếu không có response thì sẽ trả về chuỗi rỗng
+    if response==None:
+      response_str=""
+    else:
+      response_str = response.text
+
+    # Thêm id, câu prompt, câu hỏi và câu trả lời vào list all_res
+    all_res.append({
+        "id": doc['id'],
+        "prompt": prompt,
+        "question": doc["question"],
+        "answer": response_str
+    })
+
+    # Lưu kết quả vào thư mục result
+    result_folder = "all_res/result"
+    os.makedirs(result_folder, exist_ok=True)
+
+    # Lưu kết quả vào file csv sau mỗi 100 câu hỏi
+    if i % 100 == 0:
+      pd.DataFrame(all_res).to_csv(f"all_res/result/raw_result_{len(all_res)}.csv", index=False)
+```
+
+## Cho kết quả vào DataFrame
+
+```python
+df = pd.DataFrame(all_res)
+df
+```
+
+Kết quả trả về
+
+```
+	id	prompt	question	answer
+0	28-0021	Chỉ đưa ra chữ cái đứng trước câu trả lời đúng...	Một nền kinh tế trong trạng thái toàn dụng nhâ...	C
+1	28-0022	Chỉ đưa ra chữ cái đứng trước câu trả lời đúng...	Trong cơ chế tỷ giá hối đoái cố định, muốn tri...	B
+2	28-0023	Chỉ đưa ra chữ cái đứng trước câu trả lời đúng...	Tỷ giá thay đổi sẽ ảnh hưởng đến	D
+3	28-0024	Chỉ đưa ra chữ cái đứng trước câu trả lời đúng...	Theo lý thuyết của Keynes, những chính sách nà...	A
+4	28-0025	Chỉ đưa ra chữ cái đứng trước câu trả lời đúng...	Chính sách nào của chính phủ sẽ làm kinh tế tă...	A
+...	...	...	...	...
+7537	40-0027	Chỉ đưa ra chữ cái đứng trước câu trả lời đúng...	Giá trị vật phạm pháp là di vật, cổ vật có giá...	A
+7538	40-0028	Chỉ đưa ra chữ cái đứng trước câu trả lời đúng...	Hàng hóa nào là đối tượng tác động của tội sản...	A
+7539	40-0029	Chỉ đưa ra chữ cái đứng trước câu trả lời đúng...	Hành vi chiếm đoạt của tội trộm cắp tài sản (Đ...	A
+7540	40-0030	Chỉ đưa ra chữ cái đứng trước câu trả lời đúng...	Hành vi khách quan của tội cướp giật tài sản (...	B
+7541	40-0031	Chỉ đưa ra chữ cái đứng trước câu trả lời đúng...	Hành vi nào sau đây là hành vi khách quan của ...	C
+```
+
+## Lưu kết quả vào file csv để đánh giá
+
+```python
+# Chuyển đáp án đầu thành chữ cái in thường
+df['answer'] = df.answer.map(lambda x: x[0].lower())
+# Loại bỏ các ký tự không phải chữ cái a, b, c, d, e
+df['answer'] = df['answer'].map(lambda x: re.sub(r'[^abcde]', '', x))
+# Lưu kết quả vào file csv với cột id và cột answer
+submission_csv = df[['id', 'answer']].to_csv('submission.csv', index=None)
+```
+
+> Ta lấy kết quả từ file `submission.csv` để đánh giá tại trang web [VMLU Submit](https://vmlu.ai/submit)
+
+## Nộp kết quả tại VMLU
+
+<Image
+    src="/images/submission.png"
+    alt="Photo"
+    width={1125}
+    height={750}
+    priority
+    className="vmlu-submit"
+/>
