@@ -4,7 +4,7 @@
         <description><![CDATA[Thinh Pham]]></description>
         <link>https://thinh-blog.vercel.app/</link>
         <generator>RSS for Node</generator>
-        <lastBuildDate>Fri, 29 Mar 2024 08:03:29 GMT</lastBuildDate>
+        <lastBuildDate>Mon, 27 Oct 2025 11:23:48 GMT</lastBuildDate>
         <atom:link href="https://thinh-blog.vercel.app/feed.xml" rel="self" type="application/rss+xml"/>
         <item>
             <title><![CDATA[Gemini Pro Benchmarking Pipeline]]></title>
@@ -16,7 +16,7 @@
             <category><![CDATA[benchmarking]]></category>
             <category><![CDATA[pipeline]]></category>
             <dc:creator><![CDATA[Thinh Pham]]></dc:creator>
-            <pubDate>Tue, 26 Mar 2024 16:00:00 GMT</pubDate>
+            <pubDate>Fri, 29 Mar 2024 00:00:00 GMT</pubDate>
         </item>
         <item>
             <title><![CDATA[Kỹ thuật Retrival-Augmented Generation]]></title>
@@ -27,7 +27,7 @@
             <category><![CDATA[retrieval-augmented generation]]></category>
             <category><![CDATA[large language model]]></category>
             <dc:creator><![CDATA[Thinh Pham]]></dc:creator>
-            <pubDate>Thu, 14 Mar 2024 16:00:00 GMT</pubDate>
+            <pubDate>Fri, 15 Mar 2024 00:00:00 GMT</pubDate>
         </item>
     </channel>
 </rss>

@@ -28,6 +28,5 @@ export default {
     },
     readMore: "Read More →",
     postFooter: null,
-    darkMode: false,
-    nextTheme: "light",
+    darkMode: true,
 };
