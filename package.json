@@ -10,7 +10,7 @@
         "@vercel/analytics": "^1.5.0",
         "@vercel/speed-insights": "^1.2.0",
         "gray-matter": "^4.0.3",
-        "next": "^15.5.6",
+        "next": "^15.5.14",
         "nextra": "^2.13.4",
         "nextra-theme-blog": "^2.13.4",
         "react": "^18.3.1",
