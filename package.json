@@ -1,26 +1,26 @@
 {
-    "private": true,
-    "packageManager": "pnpm@8.15.5",
-    "scripts": {
-        "dev": "next",
-        "build": "node ./scripts/gen-rss.js && next build",
-        "start": "next start"
-    },
-    "dependencies": {
-        "@vercel/analytics": "^1.5.0",
-        "@vercel/speed-insights": "^1.2.0",
-        "gray-matter": "^4.0.3",
-        "next": "^15.5.6",
-        "nextra": "^2.13.4",
-        "nextra-theme-blog": "^2.13.4",
-        "react": "^18.3.1",
-        "react-dom": "^18.3.1",
-        "rss": "^1.2.2"
-    },
-    "devDependencies": {
-        "@types/node": "^24.9.1",
-        "@types/react": "^18.3.17",
-        "@types/react-dom": "^18.3.5",
-        "typescript": "^5.9.3"
-    }
+  "private": true,
+  "packageManager": "pnpm@8.15.5",
+  "scripts": {
+    "dev": "next",
+    "build": "node ./scripts/gen-rss.js && next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "@vercel/analytics": "^1.5.0",
+    "@vercel/speed-insights": "^1.2.0",
+    "gray-matter": "^4.0.3",
+    "next": "15.5.9",
+    "nextra": "^2.13.4",
+    "nextra-theme-blog": "^2.13.4",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "rss": "^1.2.2"
+  },
+  "devDependencies": {
+    "@types/node": "^24.9.1",
+    "@types/react": "^18.3.17",
+    "@types/react-dom": "^18.3.5",
+    "typescript": "^5.9.3"
+  }
 }
